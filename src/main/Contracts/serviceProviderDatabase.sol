@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
+import "./AddressBook.sol";
+
 contract serviceProviderDatabase {
+
+    AddressBook addressBook;
 
     constructor (address _addressBook){
         addressBook = AddressBook(_addressBook);
@@ -23,12 +27,13 @@ contract serviceProviderDatabase {
         registerdProviderContract[_spAddress] = _spContract;
     }
 
-    function isProviderExist(address _sp) view returns (bool){
-        return(!registerdProviderContract[address] == address(0x00));
+    function isProviderExist(address _sp) public view returns (bool){
+        return(!(registerdProviderContract[_sp] == address(0x00)));
     }
 
-    function getSPContractAddressByCode(int _code) returns (address){
-        return(registerdProviderContract[registeredServiceProviders[_code]]);
+    function getSPContractAddressByCode(int _code) public view returns (address){
+        address t = registeredServiceProviders[_code];
+        return(registerdProviderContract[t]);
     }
 }
 

@@ -11,7 +11,7 @@ contract registeredInSPPolicy {
         addressBook = AddressBook(_addressBook);
     }
 
-    function isUserRegistered(address _userAddress, int _providerCode, int _serviceCode) view returns (bool){
+    function isUserRegistered(address _userAddress, int _providerCode, int _serviceCode) public view returns (bool){
         UserDataBase userDataBase = UserDataBase(addressBook.getAddress("RUDB"));
         UserContract uc = UserContract(userDataBase.getContractAddress(_userAddress));
         return(uc.isRegisteredInService(_providerCode, _serviceCode));

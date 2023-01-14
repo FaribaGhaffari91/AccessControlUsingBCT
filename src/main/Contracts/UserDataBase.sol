@@ -13,7 +13,7 @@ contract UserDataBase is Owned{
     }
     function addNewUser (address _uAddress, address _cAddress) public {
         // add a new registered user in the list of system users.
-        require (msg.sender == addressBook.getAddress('REG'), 'This function only can be called by Registeration contract');
+        require (msg.sender == addressBook.getAddress("RegContract"), 'This function only can be called by Registeration contract');
         registeredUsers[_uAddress] = _cAddress;
     }
 

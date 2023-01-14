@@ -8,95 +8,108 @@ import "./ServiceProviderContract.sol";
 import "./registeredUserPolicy.sol";
 import "./policyDataBaseContract.sol";
 import "./NetworkProviderSupportPolicy.sol";
+import "./timeControlPolicy.sol";
+import "./registeredInSPPolicy.sol";
+import "./walletControlPolicy.sol";
 
 contract AccessManagerContract {
     AddressBook addressBook;
 
-    constructor(){
+    constructor(address _addressBook){
         addressBook = AddressBook(_addressBook);
-        addressBook.setNewAddress("ACManager");
+        addressBook.setNewAddress(address(this), "ACManager");
     }
 
      //storedToken : indicates the stored token of specific user in this contract, for payment after.
     //Normally during service provision this amount should b non zero, but after, it should be zero
     mapping(address => int) storedToken;
 
-    function userValidation(int _providerCode, int _networkProviderCode, int _serviceCode){
+    function userValidation(address _userAddress, int _providerCode, int _networkProviderCode, int _serviceCode, bool _isPrepaid) public returns (bool){
         //check the list of service policies
         serviceProviderDatabase SPDB = serviceProviderDatabase(addressBook.getAddress("RSPDB"));
         ServiceProviderContract spc = ServiceProviderContract(SPDB.getSPContractAddressByCode(_providerCode));
         policyDataBaseContract PDBC = policyDataBaseContract(addressBook.getAddress("PDB"));
-        UserDataBase udb = UserDataBase(addressBook.getAddress("RUDB"));
-
-
+        //UserDataBase udb = UserDataBase(addressBook.getAddress("RUDB"));
 
         if(spc.isPolicyApplicable(1, _serviceCode)){
             registeredUserPolicy RUP = registeredUserPolicy(PDBC.getContract(1));
-            require(RUP.isUserRegistered(msg.sender), "The user is not registered");
+            require(RUP.isUserRegistered(_userAddress), "The user is not registered");
         }
         if(spc.isPolicyApplicable(2, _serviceCode)){
             NetworkProviderSupportPolicy NPSupportContract = NetworkProviderSupportPolicy(PDBC.getContract(2));
-            require(NPSupportContract.doProviderSupport(_npCode, _serviceCode), "Your NP doesnt support this service provider");
+            require(NPSupportContract.doProviderSupport(_networkProviderCode, _serviceCode), "Your NP doesnt support this service provider");
         }
         if(spc.isPolicyApplicable(3, _serviceCode)){
+            timeControlPolicy tcp = timeControlPolicy(PDBC.getContract(3));
+            require(tcp.isAccessTimeValid(_userAddress, _providerCode, _serviceCode), "the registration time is expired");
         }
-        if(spc.isPolicyApplicable(4, _serviceCode)){
+        if(spc.isPolicyApplicable(4, _serviceCode) && _isPrepaid){
+            walletControlPolicy wcp = walletControlPolicy(PDBC.getContract(4));
+            require(wcp.isSPTokenEnough(_providerCode, _serviceCode));
+        }
 
+        if(spc.isPolicyApplicable(4, _serviceCode) && !_isPrepaid){
+            walletControlPolicy wcp = walletControlPolicy(PDBC.getContract(4));
+            require(wcp.isUserTokenEnough(_userAddress, _providerCode, _serviceCode));
         }
+
         if(spc.isPolicyApplicable(5, _serviceCode)){
-
+            registeredInSPPolicy rip = registeredInSPPolicy(PDBC.getContract(5));
+            require(rip.isUserRegistered(_userAddress, _providerCode, _serviceCode), "The user is not registered in this service");
         }
 
-    }
-
-    function UserValidation_and_Connection(address _Uaddress, uint _serviceCode) public returns (bytes32){
-        require (msg.sender == _Uaddress, "Only user itself can run this contract");
-        Addresses address_Contract = Addresses(addrConract);
-        address _UCDB = address_Contract.getAddress("UCDB");
-        address _SPDB = address_Contract.getAddress("SPDB");
-        UserContractDB contractDB = UserContractDB(_UCDB);
-        ServiceProviderDB SPDB = ServiceProviderDB(_SPDB);
-        SPContractWithNP SP_NP = SPContractWithNP(SPDB.getContractAddress(_serviceCode));
-        userContractWithSP UC= userContractWithSP(contractDB.getQosContractAddress(_Uaddress, _serviceCode));
-        address USPaddress = SPDB.getSPAddress(_serviceCode); // To get SP's Balance
-        require(SPDB.getAvailableBalance(_serviceCode)>= SP_NP.getNeededToken(), "SP's balance is not enough");
-        require(block.timestamp <= UC.GetExpireTime(), "account's balance is expired");
-        require(UC.GetRemainedToken() >= UC.GetToken(), "user do not have enough token in service providers account");
-        SPDB.decreaseAvailableBalance(_serviceCode, SP_NP.getNeededToken());
-        Balance += SP_NP.getNeededToken();
-        UC.Activate(true);
-        bytes32 token = tokenGeneration(USPaddress, _Uaddress);
-        ValidTokens[token] = true;
-        return token;
-    }
-
-    function tokenGeneration(address sp, address user) private pure returns (bytes32){
-        return keccak256(abi.encodePacked(sp,user));
-    }
-    function isValid(address user, bytes32 token) public returns(bool){ // The SP calls this function before providing the service to user
-        bytes32 generatedToken = keccak256(abi.encodePacked(msg.sender,user));
-        require(token == generatedToken, 'The token is not correct');
-        require(ValidTokens[generatedToken], 'Invalid Token');
-        ValidTokens[generatedToken] = false;
+        //if all the aplicable polcies satisfies, it means that the user is eligible to acces the service
+        //So, first we get the token from user account for the non prepaid services, and then, return true.
+        if(spc.isPolicyApplicable(4, _serviceCode) && !_isPrepaid){
+            UserDataBase UDB = UserDataBase(addressBook.getAddress("RUDB"));
+            UserContract UC = UserContract(UDB.getContractAddress(_userAddress));
+            //ServiceProviderContract spc = ServiceProviderContract(SPDB.getSPContractAddressByCode(_providerCode));
+            //To block money in "this" contract
+            storedToken[_userAddress] = storedToken[_userAddress] + UC.getToken();
+            UC.payToken(spc.getMinPrice(_serviceCode));
+        }
+        if(_isPrepaid)
+        {
+            //serviceProviderDatabase SPDB = serviceProviderDatabase(addressBook.getAddress("RSPDB"));
+            //ServiceProviderContract spc = ServiceProviderContract(SPDB.getNPContractAddressByCode(_providerCode));
+            //To block money in "this" contract
+            storedToken[_userAddress] = storedToken[_userAddress] + spc.getPricePrepaid(_serviceCode);
+            spc.payToNP(spc.getPricePrepaid(_serviceCode));
+        }
         return true;
     }
-    function PayNP(address _Uaddress, uint _serviceCode) public {
-        Addresses address_Contract = Addresses(addrConract);
-        address SPAddresses = address_Contract.getAddress("SPDB");
-        address UCDB = address_Contract.getAddress("UCDB");
-        ServiceProviderDB SP = ServiceProviderDB(SPAddresses);
-        UserContractDB _UCDB = UserContractDB(UCDB);
-        userContractWithSP UC = userContractWithSP(_UCDB.getQosContractAddress(_Uaddress, _serviceCode)); // To get user's QoS smart contract with specific SP
-        SPContractWithNP SP_NP_contract = SPContractWithNP(SP.getContractAddress(_serviceCode));
-        require(UC.getFlag(), "The contract is not active");
-        SP_NP_contract.increaseOwe(SP_NP_contract.getNeededToken());
-        Balance -= SP_NP_contract.getNeededToken();
-        UC.updateRemainedToken();
-        UC.Activate(false);
+
+    function terminationAndPayment(address _userAddress, int _providerCode, int _networkProviderCode, int _serviceCode, bool _isPrepaid, int _usage) public {
+
+        serviceProviderDatabase SPDB = serviceProviderDatabase(addressBook.getAddress("RSPDB"));
+        ServiceProviderContract spc = ServiceProviderContract(SPDB.getSPContractAddressByCode(_providerCode));
+        networkProviderDatabase npd = networkProviderDatabase(addressBook.getAddress("RNPDB"));
+        NetworkProviderContract npc = NetworkProviderContract(npd.getNPContractAddressByCode(_networkProviderCode));
+
+        if(!_isPrepaid){
+            UserDataBase UDB = UserDataBase(addressBook.getAddress("RUDB"));
+            UserContract UC = UserContract(UDB.getContractAddress(_userAddress));
+            int finalPrice = spc.getPricePayAsYouGo(_serviceCode) * _usage;
+            if(finalPrice > UC.getToken() + spc.getMinPrice(_serviceCode)){ // user already paid spc.getMinPrice(_serviceCode)
+                //if the user's available token was less than his usage, the final price would be set to user's available token. To avoid error
+                finalPrice = UC.getToken() + storedToken[_userAddress];
+            }
+            int npShare = finalPrice * spc.getNPShare(_serviceCode);
+            int spShare = finalPrice - npShare;
+            spc.addToken(spShare);
+            npc.addBalance(npShare);
+            int t = spc.getMinPrice(_serviceCode);
+            int k = storedToken[_userAddress];
+            storedToken[_userAddress] = k-t;
+
+            if(finalPrice >= spc.getMinPrice(_serviceCode)) { // if user paid less than his real usage
+                UC.payToken(finalPrice - spc.getMinPrice(_serviceCode));
+            } else{ // if the user paid more than his real usage
+                UC.chargeToken(spc.getMinPrice(_serviceCode) - finalPrice);
+            }
+        } else{
+            npc.addBalance(spc.getPricePrepaid(_serviceCode));
+            storedToken[_userAddress] = storedToken[_userAddress] - spc.getPricePrepaid(_serviceCode);
+        }
     }
-
-
-
-
-
 }

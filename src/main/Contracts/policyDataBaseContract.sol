@@ -16,32 +16,31 @@ contract policyDataBaseContract is Owned {
     //in serviceProviderContract, each service code will have one/several of these policies.
     AddressBook addressBook;
     mapping (int => address) policyContracts;
-    int counter;
-    mapping(int => int[]) allPolicies;// This is only for being able to have the list of all stored policies
+    //int counter;
+    //mapping(int => int[]) allPolicies;// This is only for being able to have the list of all stored policies
 
     constructor(address _addressBook){
         addressBook = AddressBook(_addressBook);
         addressBook.setNewAddress(address(this), "PDB");
-        counter = 0;
+        //counter = 0;
     }
 
-    function addPolicy(address _policyContract, int _title) onlyOwner public{
-        policyContracts [_title] = _policyContract;
-        counter +=1;
-        allPolicies [counter] = _title;
-
+    function addPolicy(address _policyContract, int _code) onlyOwner public {
+        policyContracts [_code] = _policyContract;
+        //counter +=1;
+        //allPolicies [counter] = _title;
     }
 
-    function getContract(int _code) view returns (address){
+    function getContract(int _code) public view returns (address){
         return (policyContracts [_code]);
     }
 
-    function getAllPolicies() view returns (int[] memory){
+/*    function getAllPolicies() view returns (int[] memory){
         int[] memory temp;
         for(int i = 0; i<= counter; i++){
             temp.push(allPolicies[counter]);
         }
         return temp;
-    }
+    }*/
 
 }

@@ -11,8 +11,8 @@ contract NetworkProviderSupportPolicy {
         addressBook = AddressBook(_addressBook);
     }
 
-    function doProviderSupport(int _npCode, int _serviceCode) view returns (bool){
-        networkProviderDatabase NPDB = networkProviderDatabase(addressBook.getAddress("PDB"));
+    function doProviderSupport(int _npCode, int _serviceCode) public view returns (bool){
+        networkProviderDatabase NPDB = networkProviderDatabase(addressBook.getAddress("RNPDB"));
         address NPcontract = NPDB.getNPContractAddressByCode(_npCode);
         NetworkProviderContract npc = NetworkProviderContract(NPcontract);
         return (npc.isServiceValid(_serviceCode));

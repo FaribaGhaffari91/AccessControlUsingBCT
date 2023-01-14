@@ -9,13 +9,12 @@ contract timeControlPolicy {
     AddressBook addressBook;
 
     constructor(address _addressBook){
-        addressBook = _addressBook;
+        addressBook = AddressBook(_addressBook);
     }
 
-    function isAccessTimeValid(address _userAddress, string _serviceProvider, string _serviceCode) view public returns (bool){
+    function isAccessTimeValid(address _userAddress, int _serviceProvider, int _serviceCode) view public returns (bool){
         UserDataBase UDB = UserDataBase(addressBook.getAddress("RUDB"));
         UserContract UC = UserContract(UDB.getContractAddress(_userAddress));
-        string id = string(abi.encodePacked(_serviceProvider, _serviceCode));
-        return(block.time < UC.getExpirationTime(id));
+        return((block.timestamp < UC.getExpirationTime(_serviceProvider, _serviceCode)));
     }
 }

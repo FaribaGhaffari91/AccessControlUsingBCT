@@ -8,10 +8,10 @@ contract NetworkProviderContract {
     int Token;
     mapping(int => bool) registeredServices;
     address npAddress;
+    int code;
 
     struct service{
         int serviceCode;
-
     }
 
     modifier onlyNP {
@@ -19,12 +19,13 @@ contract NetworkProviderContract {
         _;
     }
 
-    constructor(address _addressBook, address _npAddress){
+    constructor(address _addressBook, address _npAddress, int _code){
         addressBook = AddressBook(_addressBook);
         npAddress = _npAddress;
+        code = _code;
     }
 
-    function isServiceValid(int _providerCode) public returns(bool){
+    function isServiceValid(int _providerCode) public view returns(bool){
         //return(registeredServices[_providerCode])
         return(registeredServices[_providerCode]);
     }

@@ -11,8 +11,8 @@ contract registeredUserPolicy {
         addressBook = AddressBook(_addressBook);
     }
 
-    function isUserRegistered(address _userAddress) view returns (bool){
+    function isUserRegistered(address _userAddress) public view returns (bool){
         UserDataBase userDataBase = UserDataBase(addressBook.getAddress("RUDB"));
-        return(userDataBase.getContractAddress(_userAddress) != address(0x0));
+        return(!(userDataBase.getContractAddress(_userAddress) == address(0x0)));
     }
 }

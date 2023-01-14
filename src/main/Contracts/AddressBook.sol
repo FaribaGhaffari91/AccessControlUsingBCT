@@ -6,8 +6,8 @@ import "./Owned.sol";
 
 contract AddressBook is Owned{
     mapping (string => address) HandlerAddresses;
-    constructor(address np){
-        HandlerAddresses ['MNO'] = np;
+    constructor(){
+        //HandlerAddresses ['MNO'] = np;
         HandlerAddresses ['Owner'] = owner;
         HandlerAddresses ['AddressBook'] = address(this);
     }
@@ -16,7 +16,13 @@ contract AddressBook is Owned{
         require (HandlerAddresses[_name] == address(0x0), "this address is initiated before");
         HandlerAddresses[_name] = _Address;
     }
-    function UpdateAddress(address _Address, string memory _name) external onlyOwner{
+
+    function getAddress(string memory _name) external view returns(address) {
+    return(HandlerAddresses[_name]);
+}
+
+    //---------------Doesnt work for now-------------------------------------------------
+/*    function UpdateAddress(address _Address, string memory _name) external onlyOwner{
         //MAYBE can be used to evaluate the update/maintainability change in the system
         require (HandlerAddresses[_name] != address(0x0), "this address is not initiated before, you can not update that");
         bytes32 _nameHash = keccak256(abi.encodePacked(_name));
@@ -26,8 +32,7 @@ contract AddressBook is Owned{
         ||_nameHash == keccak256(abi.encodePacked('Network_Provider'))),
             'These addresses are permanent');
         HandlerAddresses[_name] = _Address;
-    }
-    function getAddress(string memory _name) external view returns(address) {
-        return(HandlerAddresses[_name]);
-    }
+    }*/
+    //------------------------------------------------------------------------------------
+
 }
