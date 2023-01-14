@@ -1,4 +1,3 @@
-// SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
 import "./AddressBook.sol";
@@ -7,7 +6,7 @@ import "./Owned.sol";
 contract UserDataBase is Owned{
     mapping (address => address) registeredUsers; // This mapping will map the user's address to a unique QoS contract with Service Provider.
     AddressBook addressBook;
-    constructor (address _addressBook){
+    constructor (address _addressBook) public{
         addressBook = AddressBook(_addressBook);
         addressBook.setNewAddress(address(this), "RUDB");
     }

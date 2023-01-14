@@ -1,5 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.0;
+pragma solidity >=0.4.22 <0.9.0;
 
 import "./AddressBook.sol";
 import "./UserDataBase.sol";
@@ -15,7 +14,7 @@ import "./walletControlPolicy.sol";
 contract AccessManagerContract {
     AddressBook addressBook;
 
-    constructor(address _addressBook){
+    constructor(address _addressBook) public{
         addressBook = AddressBook(_addressBook);
         addressBook.setNewAddress(address(this), "ACManager");
     }
@@ -94,13 +93,9 @@ contract AccessManagerContract {
                 //if the user's available token was less than his usage, the final price would be set to user's available token. To avoid error
                 finalPrice = UC.getToken() + storedToken[_userAddress];
             }
-            int npShare = finalPrice * spc.getNPShare(_serviceCode);
-            int spShare = finalPrice - npShare;
-            spc.addToken(spShare);
-            npc.addBalance(npShare);
-            int t = spc.getMinPrice(_serviceCode);
-            int k = storedToken[_userAddress];
-            storedToken[_userAddress] = k-t;
+            spc.addToken(finalPrice * (1- spc.getNPShare(_serviceCode)));
+            npc.addBalance(finalPrice * spc.getNPShare(_serviceCode));
+            storedToken[_userAddress] = storedToken[_userAddress] - spc.getMinPrice(_serviceCode);
 
             if(finalPrice >= spc.getMinPrice(_serviceCode)) { // if user paid less than his real usage
                 UC.payToken(finalPrice - spc.getMinPrice(_serviceCode));

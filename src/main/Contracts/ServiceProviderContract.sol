@@ -1,5 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.0;
+pragma solidity >=0.4.22 <0.9.0;
 
 import "./AddressBook.sol";
 import "./Owned.sol";
@@ -17,7 +16,7 @@ contract ServiceProviderContract is Owned {
         _;
     }
 
-    constructor(address _addressBook, address _spOwner, int _providerCode){
+    constructor(address _addressBook, address _spOwner, int _providerCode) public{
         addressBook = AddressBook(_addressBook);
         //Addressbook in real implementation is a fix number, not argument, so No Problem
         spOwner = _spOwner;

@@ -1,5 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.0;
+pragma solidity >=0.4.22 <0.9.0;
 
 import "./AddressBook.sol";
 
@@ -19,7 +18,7 @@ contract NetworkProviderContract {
         _;
     }
 
-    constructor(address _addressBook, address _npAddress, int _code){
+    constructor(address _addressBook, address _npAddress, int _code) public{
         addressBook = AddressBook(_addressBook);
         npAddress = _npAddress;
         code = _code;

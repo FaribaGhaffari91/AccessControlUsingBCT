@@ -1,5 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.0;
+pragma solidity >=0.4.22 <0.9.0;
 
 import "./AddressBook.sol";
 
@@ -19,7 +18,7 @@ contract policyDataBaseContract is Owned {
     //int counter;
     //mapping(int => int[]) allPolicies;// This is only for being able to have the list of all stored policies
 
-    constructor(address _addressBook){
+    constructor(address _addressBook) public{
         addressBook = AddressBook(_addressBook);
         addressBook.setNewAddress(address(this), "PDB");
         //counter = 0;

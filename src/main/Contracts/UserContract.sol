@@ -1,4 +1,3 @@
-// SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
 import "./AddressBook.sol";
@@ -26,7 +25,7 @@ contract UserContract {
     bool active;
     address userAddress;
 
-    constructor(address _addressBook, address _userAddress){ //This function is only used for user registration in the system
+    constructor(address _addressBook, address _userAddress) public{ //This function is only used for user registration in the system
         addressBook = AddressBook(_addressBook); // in realworld setup, addressBook will not be sent as parameter, it is the ONLY fix address
         //in the platform. So, it will be an address.
         require (msg.sender == addressBook.getAddress("RegContract"), 'This contract only can be deployed by Register Contract');

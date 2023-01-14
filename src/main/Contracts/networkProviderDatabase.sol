@@ -1,12 +1,11 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.0;
+pragma solidity >=0.4.22 <0.9.0;
 
 import "./AddressBook.sol";
 import "./NetworkProviderContract.sol";
 
 contract networkProviderDatabase is Owned{
     AddressBook addressBook;
-    constructor (address _addressBook){
+    constructor (address _addressBook) public{
         addressBook = AddressBook(_addressBook);
         addressBook.setNewAddress(address(this), "RNPDB");
     }
