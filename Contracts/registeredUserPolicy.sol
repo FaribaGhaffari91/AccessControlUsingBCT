@@ -15,3 +15,4 @@ contract registeredUserPolicy {
         return(!(userDataBase.getContractAddress(_userAddress) == address(0x0)));
     }
 }
+

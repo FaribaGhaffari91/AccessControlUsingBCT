@@ -16,3 +16,4 @@ contract registeredInSPPolicy {
         return(uc.isRegisteredInService(_providerCode, _serviceCode));
     }
 }
+

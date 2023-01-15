@@ -9,6 +9,7 @@ import "./policyDataBaseContract.sol";
 import "./registeredUserPolicy.sol";
 import "./NetworkProviderSupportPolicy.sol";
 
+
 contract RegistrationContract {
 
     AddressBook addressBook;
