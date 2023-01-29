@@ -4,14 +4,15 @@ import "./networkProviderDatabase.sol";
 import "./NetworkProviderContract.sol";
 
 contract NetworkProviderSupportPolicy {
-    AddressBook addressBook;
+    address addressBook;
 
     constructor(address _addressBook) public{
-        addressBook = AddressBook(_addressBook);
+        addressBook = _addressBook;
     }
 
     function doProviderSupport(int _npCode, int _serviceCode) public view returns (bool){
-        networkProviderDatabase NPDB = networkProviderDatabase(addressBook.getAddress("RNPDB"));
+        AddressBook adb = AddressBook(addressBook);
+        networkProviderDatabase NPDB = networkProviderDatabase(adb.getAddress("RNPDB"));
         address NPcontract = NPDB.getNPContractAddressByCode(_npCode);
         NetworkProviderContract npc = NetworkProviderContract(NPcontract);
         return (npc.isServiceValid(_serviceCode));

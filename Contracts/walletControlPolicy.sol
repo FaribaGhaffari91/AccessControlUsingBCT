@@ -9,25 +9,27 @@ import "./serviceProviderDatabase.sol";
 
 contract walletControlPolicy {
 
-     AddressBook addressBook;
+     address addressBook;
 
     constructor(address _addressBook) public{
-        addressBook = AddressBook(_addressBook);
+
+        addressBook = _addressBook;
     }
 
     function isUserTokenEnough(address _userAddress, int _providerCode, int _serviceCode) public view returns (bool)
     { //To be called in pay as you go scenario
-        UserDataBase UDB = UserDataBase(addressBook.getAddress("RUDB"));
+        AddressBook adb = AddressBook(addressBook);
+        UserDataBase UDB = UserDataBase(adb.getAddress("RUDB"));
         UserContract UC = UserContract(UDB.getContractAddress(_userAddress));
-        serviceProviderDatabase SPDB = serviceProviderDatabase(addressBook.getAddress("RSPDB"));
+        serviceProviderDatabase SPDB = serviceProviderDatabase(adb.getAddress("RSPDB"));
         ServiceProviderContract spc = ServiceProviderContract(SPDB.getSPContractAddressByCode(_providerCode));
         require(UC.getToken() >= spc.getMinPrice(_serviceCode), "User's token is not enough to start the service");
         return true;
     }
 
-    function isSPTokenEnough(int _providerCode, int _serviceCode) public view returns (bool)
-    {// To be called in prepaid scenario
-        serviceProviderDatabase SPDB = serviceProviderDatabase(addressBook.getAddress("RSPDB"));
+    function isSPTokenEnough(int _providerCode, int _serviceCode) public view returns (bool){// To be called in prepaid scenario
+        AddressBook adb = AddressBook(addressBook);
+        serviceProviderDatabase SPDB = serviceProviderDatabase(adb.getAddress("RSPDB"));
         ServiceProviderContract sp = ServiceProviderContract(SPDB.getSPContractAddressByCode(_providerCode));
         require(sp.getToken() >= sp.getPricePrepaid(_serviceCode), "SP's token is not enough to start the service");
         return true;

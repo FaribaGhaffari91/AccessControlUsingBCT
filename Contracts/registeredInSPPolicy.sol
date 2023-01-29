@@ -4,14 +4,15 @@ import "./UserDataBase.sol";
 import "./UserContract.sol";
 
 contract registeredInSPPolicy {
-    AddressBook addressBook;
+    address addressBook;
 
     constructor(address _addressBook) public{
-        addressBook = AddressBook(_addressBook);
+        addressBook = _addressBook;
     }
 
     function isUserRegistered(address _userAddress, int _providerCode, int _serviceCode) public view returns (bool){
-        UserDataBase userDataBase = UserDataBase(addressBook.getAddress("RUDB"));
+        AddressBook adb = AddressBook(addressBook);
+        UserDataBase userDataBase = UserDataBase(adb.getAddress("RUDB"));
         UserContract uc = UserContract(userDataBase.getContractAddress(_userAddress));
         return(uc.isRegisteredInService(_providerCode, _serviceCode));
     }

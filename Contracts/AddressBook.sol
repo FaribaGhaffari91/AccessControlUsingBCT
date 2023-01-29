@@ -1,16 +1,7 @@
 pragma solidity >=0.4.22 <0.9.0;
 
-contract Owned {
-    address owner;
-    constructor() public{
-        owner = msg.sender;
-    }
+import "./Owned.sol";
 
-    modifier onlyOwner {
-        require(msg.sender == owner);
-        _;
-    }
-}
 
 contract AddressBook is Owned{
     mapping (string => address) HandlerAddresses;

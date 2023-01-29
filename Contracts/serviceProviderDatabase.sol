@@ -5,11 +5,12 @@ import "./AddressBook.sol";
 
 contract serviceProviderDatabase {
 
-    AddressBook addressBook;
+    address addressBook;
 
     constructor (address _addressBook) public{
-        addressBook = AddressBook(_addressBook);
-        addressBook.setNewAddress(address(this), "RSPDB");
+        addressBook = _addressBook;
+        AddressBook adb = AddressBook(addressBook);
+        adb.setNewAddress(address(this), "RSPDB");
     }
 
     mapping(int => address) registeredServiceProviders;
@@ -17,13 +18,15 @@ contract serviceProviderDatabase {
 
     function addNewProvider (int _code, address _spAddress) public {
         // add a new registered service provider in the list of system providers.
-        require (msg.sender == addressBook.getAddress('REG'), 'This function only can be called by Registeration contract');
+        AddressBook adb = AddressBook(addressBook);
+        require (msg.sender == adb.getAddress("RegContract"), 'This function only can be called by Registeration contract');
         registeredServiceProviders[_code] = _spAddress;
     }
 
     function registerContract (address _spAddress, address _spContract) public {
         // add the contract address of newly registered service provider's contract'.
-        require (msg.sender == addressBook.getAddress('REG'), 'This function only can be called by Registeration contract');
+        AddressBook adb = AddressBook(addressBook);
+        require (msg.sender == adb.getAddress('RegContract'), 'This function only can be called by Registeration contract');
         registerdProviderContract[_spAddress] = _spContract;
     }
 
@@ -34,6 +37,10 @@ contract serviceProviderDatabase {
     function getSPContractAddressByCode(int _code) public view returns (address){
         address t = registeredServiceProviders[_code];
         return(registerdProviderContract[t]);
+    }
+
+    function getSPContractAddressByAddress(address _spAddress) public view returns (address){
+        return(registerdProviderContract[_spAddress]);
     }
 }
 

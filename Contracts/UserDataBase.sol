@@ -3,16 +3,18 @@ pragma solidity >=0.4.22 <0.9.0;
 import "./AddressBook.sol";
 import "./Owned.sol";
 
-contract UserDataBase is Owned{
+contract UserDataBase {
     mapping (address => address) registeredUsers; // This mapping will map the user's address to a unique QoS contract with Service Provider.
-    AddressBook addressBook;
+    address addressBook;
     constructor (address _addressBook) public{
-        addressBook = AddressBook(_addressBook);
-        addressBook.setNewAddress(address(this), "RUDB");
+        addressBook = _addressBook;
+        AddressBook adb = AddressBook(addressBook);
+        adb.setNewAddress(address(this), "RUDB");
     }
     function addNewUser (address _uAddress, address _cAddress) public {
         // add a new registered user in the list of system users.
-        require (msg.sender == addressBook.getAddress("RegContract"), 'This function only can be called by Registeration contract');
+        AddressBook adb = AddressBook(addressBook);
+        require (msg.sender == adb.getAddress("RegContract"), 'This function only can be called by Registeration contract');
         registeredUsers[_uAddress] = _cAddress;
     }
 

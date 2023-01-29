@@ -13,25 +13,26 @@ contract policyDataBaseContract is Owned {
     // "SubAttrRegSP" = 5 is the subject attribute check that if the user is registered in the service provider.
     // There is a function to add other policies in the system that its owner is the system admin.
     //in serviceProviderContract, each service code will have one/several of these policies.
-    AddressBook addressBook;
+    address addressBook;
     mapping (int => address) policyContracts;
     //int counter;
     //mapping(int => int[]) allPolicies;// This is only for being able to have the list of all stored policies
 
     constructor(address _addressBook) public{
-        addressBook = AddressBook(_addressBook);
-        addressBook.setNewAddress(address(this), "PDB");
+        addressBook = _addressBook;
+        AddressBook adb = AddressBook(addressBook);
+        adb.setNewAddress(address(this), "PDB");
         //counter = 0;
     }
 
-    function addPolicy(address _policyContract, int _code) onlyOwner public {
-        policyContracts [_code] = _policyContract;
+    function addPolicy(address _policyContract, int _code) public {// onlyOwner public {
+        policyContracts[_code] = _policyContract;
         //counter +=1;
         //allPolicies [counter] = _title;
     }
 
     function getContract(int _code) public view returns (address){
-        return (policyContracts [_code]);
+        return (policyContracts[_code]);
     }
 
 /*    function getAllPolicies() view returns (int[] memory){

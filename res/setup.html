@@ -1,0 +1,164 @@
+<html>
+<head>
+    <title>Access Control</title>
+    <meta charset="utf-8">
+    <link rel="icon" href="favicon.svg"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- UIkit CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.6.18/dist/css/uikit.min.css" />
+
+    <!-- UIkit JS -->
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.6.18/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.6.18/dist/js/uikit-icons.min.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        .MyButton {
+            cursor:pointer;
+            padding: 15px;
+            font-size: 95%;
+        }
+        .MyButtonIcon {
+            width: 25px;
+            height: 25px;
+            margin-right: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="HeaderHeight HeaderBackground" style="width: 100%; position: fixed;top: 0px;z-index: 1;">
+    <div class="Centered" style="display: inline-flex; flex-direction: row-reverse;">
+        <div class="HeaderHeight uk-inline" style="text-align: center;flex: 0 0 50px;">
+            &nbsp <img id="OptionMenuImg" src="menu.svg" style="width:20px; height: 20px;" alt=""/>
+            &nbsp
+            <div id="OptionMenu" uk-dropdown="mode: click; pos: bottom-right; animation: uk-animation-slide-top-small; duration: 250" style="padding: 0">
+                <ul class="uk-nav uk-dropdown-nav">
+                    <li> <a id="About" class="" href="#">About</a> </li>
+                </ul>
+            </div>
+        </div>
+        <div class="HeaderHeight uk-text-normal" style="text-align: center;flex: auto; color:white;">
+            <div id="PageTitle" class="HeaderTitle">Access Control</div>
+        </div>
+        <div class="HeaderHeight" id="Return" style="text-align: center;flex: 0 0 50px; opacity: 0;">
+            &nbsp <img src="left-arrow.svg" style="width:20px; height: 20px;" alt=""/> &nbsp
+        </div>
+    </div>
+</div>
+
+<br/>
+<div class="Centered">
+    <div class="uk-text-primary MyButton" id="Init"><img id="InitIcon" class="MyButtonIcon" src="circle.svg">1. Initialize</div>
+    <div class="uk-text-primary MyButton" id="MNO"><img id="MNOIcon" class="MyButtonIcon" src="circle.svg">2. Register MNO</div>
+    <div class="uk-text-primary MyButton" id="SP"><img id="SPIcon" class="MyButtonIcon" src="circle.svg">3. Register Service Provider</div>
+    <div class="uk-text-primary MyButton" id="UE"><img id="UEIcon" class="MyButtonIcon" src="circle.svg">4. Register User Equipment</div>
+    <div class="uk-text-primary MyButton" id="User1Reg"><img id="User1RegIcon" class="MyButtonIcon" src="circle.svg">5. Register User-1 in prepaid service</div>
+    <div class="uk-text-primary MyButton" id="User1Access"><img id="User1AccessIcon" class="MyButtonIcon" src="circle.svg">6. Access User-1 in prepaid service</div>
+    <div class="uk-text-primary MyButton" id="User1Pay"><img id="User1PayIcon" class="MyButtonIcon" src="circle.svg">7. Pay to NP in prepaid service for User-1</div>
+    <div class="uk-text-primary MyButton" id="User2Reg"><img id="User2RegIcon" class="MyButtonIcon" src="circle.svg">8. Register User-2 in pay as you go service</div>
+    <div class="uk-text-primary MyButton" id="User2Access"><img id="User2AccessIcon" class="MyButtonIcon" src="circle.svg">9. Access User-2 in pay as you go service</div>
+    <div class="uk-text-primary MyButton" style="font-size: 80%;" id="User2Pay"><img id="User2PayIcon" class="MyButtonIcon" src="circle.svg">10. Pay to NP and SP in pay as you go service for User-2</div>
+</div>
+
+<div id="MyModal" class="uk-flex-top" uk-modal>
+    <div class="uk-modal-dialog uk-margin-auto-vertical Centered" style="padding: 20px;">
+        <table id="table" class="uk-table uk-table-striped uk-table-hover" style="font-size: 95%">
+            <tbody>
+            <tr style="background-color: #ffffdd">
+                <td style="font-weight: bold;">Status</td>
+                <td style="font-weight: bold;" id="Status"></td>
+            </tr>
+            <tr>
+                <td>Total execution time (ms)</td>
+                <td id="TotalTime"></td>
+            </tr>
+            <tr>
+                <td>Server response</td>
+                <td id="ServerResponse"></td>
+            </tr>
+            </tbody>
+        </table>
+        <p class="uk-text-right" style="margin: 0;">
+            <button class="uk-button uk-button-default uk-modal-close" style="margin: 10px;" type="button">OK</button>
+        </p>
+    </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+    $("#About").click(function () {
+        load("/about.html");
+    });
+
+    createLoadingSpinner();
+    $("#LoadingSpinner").hide();
+
+    var clickFunc = function (arg) {
+        $("#LoadingSpinner").show();
+        var beginTime = new Date().getTime();
+        $.ajax({
+            url: "/api/"+arg,
+            type: "GET",
+            error: function (data, status) {
+                $("#LoadingSpinner").hide();
+                var endTime = new Date().getTime();
+                var duration = endTime - beginTime;
+
+                $("#Status").html("Failed");
+                $("#TotalTime").html("" + duration);
+                $("#ServerResponse").html("");
+                $("#" + arg + "Icon").prop("src", "no.svg");
+                UIkit.modal($("#MyModal")).show();
+            },
+            success: function (data, status) {
+                $("#LoadingSpinner").hide();
+                var endTime = new Date().getTime();
+                var duration = endTime - beginTime;
+
+                $("#Status").html("Succeeded");
+                $("#TotalTime").html("" + duration);
+                $("#ServerResponse").html("" + data);
+                $("#" + arg + "Icon").prop("src", "yes.svg");
+                UIkit.modal($("#MyModal")).show();
+            }
+        });
+    }
+    $("#Init").click(function () {
+        clickFunc("Init");
+    });
+    $("#MNO").click(function () {
+        clickFunc("MNO");
+    });
+    $("#SP").click(function () {
+        clickFunc("SP");
+    });
+    $("#UE").click(function () {
+        clickFunc("UE");
+    });
+    $("#User1Reg").click(function () {
+        clickFunc("User1Reg");
+    });
+    $("#User1Access").click(function () {
+        clickFunc("User1Access");
+    });
+    $("#User1Pay").click(function () {
+        clickFunc("User1Pay");
+    });
+    $("#User2Reg").click(function () {
+        clickFunc("User2Reg");
+    });
+    $("#User2Access").click(function () {
+        clickFunc("User2Access");
+    });
+    $("#User2Pay").click(function () {
+        clickFunc("User2Pay");
+    });
+
+</script>
+</body>
+</html>
