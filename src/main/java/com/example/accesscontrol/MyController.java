@@ -60,11 +60,11 @@ public class MyController {
         long beginTime = System.currentTimeMillis();
 
         //------------ NP Registration in the system-------------------------------------------
-        RegistrationInSystem(web3, addressesInWorkspace.get(2), "NP" , 1);
+        long duration = RegistrationInSystem(web3, addressesInWorkspace.get(2), "NP" , 1);
 
         long endTime = System.currentTimeMillis();
-        long duration = endTime - beginTime;
-        return "Registered in " + duration + " ms";
+        long durationST = endTime - beginTime;
+        return "Registered in " + duration + " ms and server time is: " + durationST;
     }
 
     @GetMapping("/SP")
@@ -72,12 +72,12 @@ public class MyController {
         long beginTime = System.currentTimeMillis();
 
         //------------ SP Registration in the system-------------------------------------------
-        RegistrationInSystem(web3, addressesInWorkspace.get(2), "SP" , 1);
-        serviceInsertion(web3, addressesInWorkspace.get(2), 1);
+        long duration1 = RegistrationInSystem(web3, addressesInWorkspace.get(2), "SP" , 1);
+        long duration2 = serviceInsertion(web3, addressesInWorkspace.get(2), 1);
 
         long endTime = System.currentTimeMillis();
-        long duration = endTime - beginTime;
-        return "Registered in " + duration + " ms";
+        long durationST = endTime - beginTime;
+        return "Registered in " + (duration1 + duration2) + " ms and server time is: " + durationST;
     }
 
     @GetMapping("/UE")
@@ -85,77 +85,77 @@ public class MyController {
         long beginTime = System.currentTimeMillis();
 
         //------------ UE Registration in the system-------------------------------------------
-        RegistrationInSystem(web3, addressesInWorkspace.get(2), "UE" , 1);
+        long duration = RegistrationInSystem(web3, addressesInWorkspace.get(2), "UE" , 1);
 
         long endTime = System.currentTimeMillis();
-        long duration = endTime - beginTime;
-        return "Registered in " + duration + " ms";
+        long durationST = endTime - beginTime;
+        return "Registered in " + duration + " ms and server time is: " + durationST;
     }
 
     @GetMapping("/User1Reg")
     public String User1Reg(HttpServletRequest request, HttpServletResponse response) throws Exception {
         long beginTime = System.currentTimeMillis();
 
-        userRegistrationInPrepaid(web3, addressesInWorkspace.get(2), 1); //user service 1
+        long duration = userRegistrationInPrepaid(web3, addressesInWorkspace.get(2), 1); //user service 1
 
         long endTime = System.currentTimeMillis();
-        long duration = endTime - beginTime;
-        return "Registered in " + duration + " ms";
+        long durationST = endTime - beginTime;
+        return "Registered in " + duration + " ms and server time is" + durationST;
     }
 
     @GetMapping("/User1Access")
     public String User1Access(HttpServletRequest request, HttpServletResponse response) throws Exception {
         long beginTime = System.currentTimeMillis();
 
-        userAccessToPrepaid(web3, addressesInWorkspace.get(1), 1);
+        long duration = userAccessToPrepaid(web3, addressesInWorkspace.get(1), 1);
 
         long endTime = System.currentTimeMillis();
-        long duration = endTime - beginTime;
-        return "Accessed in " + duration + " ms";
+        long durationST = endTime - beginTime;
+        return "Accessed in " + duration + " ms, server time is " + durationST;
     }
 
     @GetMapping("/User1Pay")
     public String User1Pay(HttpServletRequest request, HttpServletResponse response) throws Exception {
         long beginTime = System.currentTimeMillis();
 
-        PaymentToMNOPrepaid(web3, addressesInWorkspace.get(1), 1);
+        long duration = PaymentToMNOPrepaid(web3, addressesInWorkspace.get(1), 1);
 
         long endTime = System.currentTimeMillis();
-        long duration = endTime - beginTime;
-        return "Paid in " + duration + " ms";
+        long durationDApp = endTime - beginTime;
+        return "Paid in " + duration + " ms, and the DApp latency is " + durationDApp + " ms";
     }
 
     @GetMapping("/User2Reg")
     public String User2Reg(HttpServletRequest request, HttpServletResponse response) throws Exception {
         long beginTime = System.currentTimeMillis();
 
-        userRegistrationInPAYG(web3, addressesInWorkspace.get(2), 1);//user service
+        long duration = userRegistrationInPAYG(web3, addressesInWorkspace.get(2), 1);//user service
 
         long endTime = System.currentTimeMillis();
-        long duration = endTime - beginTime;
-        return "Registered in " + duration + " ms";
+        long durationST = endTime - beginTime;
+        return "Registered in " + duration + " ms, and server time is: "+ durationST;
     }
 
     @GetMapping("/User2Access")
     public String User2Access(HttpServletRequest request, HttpServletResponse response) throws Exception {
         long beginTime = System.currentTimeMillis();
 
-        userAccessToPAYG(web3, addressesInWorkspace.get(1), 1);
+        long duration = userAccessToPAYG(web3, addressesInWorkspace.get(1), 1);
 
         long endTime = System.currentTimeMillis();
-        long duration = endTime - beginTime;
-        return "Accessed in " + duration + " ms";
+        long durationST = endTime - beginTime;
+        return "Accessed in " + duration + " ms, server time is: " + durationST;
     }
 
     @GetMapping("/User2Pay")
     public String User2Pay(HttpServletRequest request, HttpServletResponse response) throws Exception {
         long beginTime = System.currentTimeMillis();
 
-        PaymentToMNOPAYG(web3, addressesInWorkspace.get(1), 1);
+        long duration = PaymentToMNOPAYG(web3, addressesInWorkspace.get(1), 1);
 
         long endTime = System.currentTimeMillis();
-        long duration = endTime - beginTime;
-        return "Paid in " + duration + " ms";
+        long durationST = endTime - beginTime;
+        return "Paid in " + duration + " ms, and server time is: "+ durationST;
     }
 
     private final static BigInteger GAS_LIMIT = BigInteger.valueOf(20000000L);
@@ -166,7 +166,7 @@ public class MyController {
     //String ADMIN_PRIVATE_KEY = "ae7c5d419c37c52e61777a7fb0c7396092d4e713ca97ca66ad14968f2c54b60f";
     private static List<String> addressesInWorkspace = new ArrayList<>(); //0 is addressBook, 1 is acm, 2 is RegM, 3 is npdb, 4 is policy, 5 is spdb, 6 is udb
 
-    private static void PaymentToMNOPAYG(Web3j web3, String _accessControlContract, int _ueNumber) throws Exception {
+    private static long PaymentToMNOPAYG(Web3j web3, String _accessControlContract, int _ueNumber) throws Exception {
 
         //----To read th credentials from generated file
         String path = "./UEs/ue";
@@ -206,17 +206,21 @@ public class MyController {
         }
         executorService.shutdown();
         executorService.awaitTermination(1, TimeUnit.HOURS);
-
+        long beginTime = 0;
+        long endTime = 0;
         for (int i = 0; i < credentials.size(); i++) {
             AccessManagerContract acm = AccessManagerContract.load(_accessControlContract, web3, credentials.get(i), GAS_PRICE, GAS_LIMIT);
+            beginTime = System.currentTimeMillis();
             TransactionReceipt res = acm.terminationAndPayment(address.get(i), BigInteger.valueOf(1), BigInteger.valueOf(1), BigInteger.valueOf(2),BigInteger.valueOf(2)).send();
+            endTime = System.currentTimeMillis();
             System.out.println("user's blocked token for Prepaid service resuet in access manager is: " + acm.getUserStoredToken(address.get(i)).send());
             System.out.println("user available token after access in PAYG is: " + acm.getUserToken(address.get(i)).send());
             System.out.println("SP available token after access in PAYG is: " + acm.getSPToken(BigInteger.valueOf(1)).send());
             System.out.println("NP available token after access in PAYG is: " + acm.getNPToken(BigInteger.valueOf(1)).send());
         }
+        return (endTime - beginTime);
     }
-    private static void PaymentToMNOPrepaid(Web3j web3, String _accessControlContract, int _ueNumber) throws Exception {
+    private static long PaymentToMNOPrepaid(Web3j web3, String _accessControlContract, int _ueNumber) throws Exception {
 
         //----To read th credentials from generated file
         String path = "./UEs/ue";
@@ -256,17 +260,21 @@ public class MyController {
         }
         executorService.shutdown();
         executorService.awaitTermination(1, TimeUnit.HOURS);
-
+        long beginTime = 0;
+        long endTime = 0;
         for (int i = 0; i < credentials.size(); i++) {
             AccessManagerContract acm = AccessManagerContract.load(_accessControlContract, web3, credentials.get(i), GAS_PRICE, GAS_LIMIT);
+            beginTime = System.currentTimeMillis();
             TransactionReceipt res = acm.terminationAndPayment(address.get(i), BigInteger.valueOf(1), BigInteger.valueOf(1), BigInteger.valueOf(1),BigInteger.valueOf(2)).send();
+            endTime = System.currentTimeMillis();
             System.out.println("user's blocked token for Prepaid service resuet in access manager is: " + acm.getUserStoredToken(address.get(i)).send());
             System.out.println("user available token after access in Prepaid is: " + acm.getUserToken(address.get(i)).send());
             System.out.println("SP available token after access in Prepaid is: " + acm.getSPToken(BigInteger.valueOf(1)).send());
             System.out.println("NP available token after access in Prepaid is: " + acm.getNPToken(BigInteger.valueOf(1)).send());
         }
+        return (endTime - beginTime);
     }
-    private static void userAccessToPAYG(Web3j web3, String _accessControlContract, int _ueNumber) throws Exception {
+    private static long userAccessToPAYG(Web3j web3, String _accessControlContract, int _ueNumber) throws Exception {
 
         //----To read th credentials from generated file
         String path = "./UEs/ue";
@@ -306,19 +314,23 @@ public class MyController {
         }
         executorService.shutdown();
         executorService.awaitTermination(1, TimeUnit.HOURS);
-
+        long beginTime = 0;
+        long endTime = 0;
         for (int i = 0; i < credentials.size(); i++) {
             AccessManagerContract acm = AccessManagerContract.load(_accessControlContract, web3, credentials.get(i), GAS_PRICE, GAS_LIMIT);
+            beginTime = System.currentTimeMillis();
             TransactionReceipt res = acm.userValidation(address.get(i), BigInteger.valueOf(1), BigInteger.valueOf(1), BigInteger.valueOf(2)).send();
+            endTime = System.currentTimeMillis();
             System.out.println("user access request is: " + res.isStatusOK());
             System.out.println("user's blocked token for PAYG service resuet in access manager is: " + acm.getUserStoredToken(address.get(i)).send());
             System.out.println("user available token after registration in PAYG is: " + acm.getUserToken(address.get(i)).send());
             System.out.println("SP available token after registration in PAYG is: " + acm.getSPToken(BigInteger.valueOf(1)).send());
             System.out.println("NP available token after registration in PAYG is: " + acm.getNPToken(BigInteger.valueOf(1)).send());
         }
+        return (endTime-beginTime);
     }
 
-    private static void userAccessToPrepaid(Web3j web3, String _accessControlContract, int _ueNumber) throws Exception {
+    private static long userAccessToPrepaid(Web3j web3, String _accessControlContract, int _ueNumber) throws Exception {
         //----To read th credentials from generated file
         String path = "./UEs/ue";
         String pathSP = "./SPs/sp";
@@ -357,19 +369,24 @@ public class MyController {
         }
         executorService.shutdown();
         executorService.awaitTermination(1, TimeUnit.HOURS);
+        long beginTime = 0;
+        long endTime = 0;
 
         for (int i = 0; i < credentials.size(); i++) {
             AccessManagerContract acm = AccessManagerContract.load(_accessControlContract, web3, credentials.get(i), GAS_PRICE, GAS_LIMIT);
+            beginTime = System.currentTimeMillis();
             TransactionReceipt res = acm.userValidation(address.get(i), BigInteger.valueOf(1), BigInteger.valueOf(1), BigInteger.valueOf(1)).send();
+            endTime = System.currentTimeMillis();
             System.out.println("user access request is: " + res.isStatusOK());
             System.out.println("user's blocked token in access manager is: " + acm.getUserStoredToken(address.get(i)).send());
             System.out.println("user available token after registration in PAYG is: " + acm.getUserToken(address.get(i)).send());
             System.out.println("SP available token after registration in PAYG is: " + acm.getSPToken(BigInteger.valueOf(1)).send());
             System.out.println("NP available token after registration in PAYG is: " + acm.getNPToken(BigInteger.valueOf(1)).send());
         }
+        return endTime-beginTime;
     }
 
-    private static void userRegistrationInPAYG(Web3j web3, String _regidtrationContract, int _ueNumber) throws Exception {
+    private static long userRegistrationInPAYG(Web3j web3, String _regidtrationContract, int _ueNumber) throws Exception {
 
         //----To read th credentials from generated file
         String path = "./UEs/ue";
@@ -404,22 +421,25 @@ public class MyController {
         }
         executorService.shutdown();
         executorService.awaitTermination(1, TimeUnit.HOURS);
+        long beginTime = 0;
+        long endTime = 0;
 
         for (int i = 0; i < credentials.size(); i++) {
             RegistrationContract regC = RegistrationContract.load(_regidtrationContract, web3, credentials.get(i), GAS_PRICE, GAS_LIMIT);
             System.out.println("user available token before registration in PAYG is: " + regC.getUserToken(address.get(i)).send());
             System.out.println("SP available token before registration in PAYG is: " + regC.getSPToken(BigInteger.valueOf(1)).send());
             System.out.println("NP available token before registration in PAYG is: " + regC.getNPToken(BigInteger.valueOf(1)).send());
-
+            beginTime = System.currentTimeMillis();
             regC.registerToServicePayAsYouGo(address.get(i), BigInteger.valueOf(1), BigInteger.valueOf(1), BigInteger.valueOf(70)).send();
+            endTime = System.currentTimeMillis();
             System.out.println("user available token after registration in PAYG is: " + regC.getUserToken(address.get(i)).send());
             System.out.println("SP available token after registration in PAYG is: " + regC.getSPToken(BigInteger.valueOf(1)).send());
             System.out.println("NP available token after registration in PAYG is: " + regC.getNPToken(BigInteger.valueOf(1)).send());
         }
-
+        return (endTime-beginTime);
     }
 
-    private static void userRegistrationInPrepaid(Web3j web3, String _regidtrationContract, int _ueNumber) throws Exception {
+    private static long userRegistrationInPrepaid(Web3j web3, String _regidtrationContract, int _ueNumber) throws Exception {
 
         //----To read th credentials from generated file
         String path = "./UEs/ue";
@@ -454,22 +474,25 @@ public class MyController {
         }
         executorService.shutdown();
         executorService.awaitTermination(1, TimeUnit.HOURS);
+        long beginTime = 0;
+        long endTime = 0;
 
         for (int i = 0; i < credentials.size(); i++) {
             RegistrationContract regC = RegistrationContract.load(_regidtrationContract, web3, credentials.get(i), GAS_PRICE, GAS_LIMIT);
             System.out.println("user available token before registration is: " + regC.getUserToken(address.get(i)).send());
             System.out.println("SP available token before registration is: " + regC.getSPToken(BigInteger.valueOf(1)).send());
             System.out.println("NP available token before registration is: " + regC.getNPToken(BigInteger.valueOf(1)).send());
-
+            beginTime = System.currentTimeMillis();
             regC.registerToServicePrePaid(address.get(i), addressSP.get(i), BigInteger.valueOf(1), BigInteger.valueOf(1), BigInteger.valueOf(70)).send();
+            endTime = System.currentTimeMillis();
             System.out.println("user available token is: " + regC.getUserToken(address.get(i)).send());
             System.out.println("SP available token is: " + regC.getSPToken(BigInteger.valueOf(1)).send());
             System.out.println("NP available token after registration is: " + regC.getNPToken(BigInteger.valueOf(1)).send());
         }
-
+        return (endTime-beginTime);
     }
 
-    private static void RegistrationInSystem(Web3j web3, String _regidtrationContract, String entity, int _spNumber) throws Exception {
+    private static long RegistrationInSystem(Web3j web3, String _regidtrationContract, String entity, int _spNumber) throws Exception {
 
         //----To read th credentials from generated file
         String path = "";
@@ -506,9 +529,13 @@ public class MyController {
         }
         executorService.shutdown();
         executorService.awaitTermination(1, TimeUnit.HOURS);
+        long beginTime = 0;
+        long endTime = 0;
 
         for (int i = 0; i < credentials.size(); i++) {
+
             RegistrationContract regC = RegistrationContract.load(_regidtrationContract, web3, credentials.get(i), GAS_PRICE, GAS_LIMIT);
+            beginTime = System.currentTimeMillis();
             if(entity.equals("SP")) {
                 TransactionReceipt tr = regC.registerServiceProvider(credentials.get(i).getAddress()).send();
             } else if (entity.equals("NP")){
@@ -516,12 +543,13 @@ public class MyController {
             } else{
                 TransactionReceipt tr = regC.registerNewUser(credentials.get(i).getAddress()).send();
             }
+            endTime = System.currentTimeMillis();
             System.out.println("New " + entity + "'s address is: " + credentials.get(i).getAddress());
         }
-
+        return (endTime - beginTime);
     }
 
-    public static void serviceInsertion(Web3j web3, String _regidtrationContract, int _spNumber) throws Exception {
+    public static long serviceInsertion(Web3j web3, String _regidtrationContract, int _spNumber) throws Exception {
 
         //----To read th credentials from generated file
         String path = "./SPs/sp";
@@ -551,21 +579,23 @@ public class MyController {
         }
         executorService.shutdown();
         executorService.awaitTermination(1, TimeUnit.HOURS);
+        long beginTime = 0;
+        long endTime = 0;
 
         for (int i = 0; i < credentials.size(); i++) {
             RegistrationContract regC = RegistrationContract.load(_regidtrationContract, web3, credentials.get(i), GAS_PRICE, GAS_LIMIT);
+            beginTime = System.currentTimeMillis();
             regC.addNewServiceInSP(address.get(i),BigInteger.valueOf(1), BigInteger.valueOf(5), BigInteger.valueOf(1), BigInteger.valueOf(0), BigInteger.valueOf(0), BigInteger.valueOf(0)).send(); // prepaid service
             regC.addPolicyInService(BigInteger.valueOf(1), BigInteger.valueOf(1), address.get(i)).send();
             regC.addPolicyInService(BigInteger.valueOf(1), BigInteger.valueOf(5), address.get(i)).send();
-
             regC.addNewServiceInSP(address.get(i), BigInteger.valueOf(2), BigInteger.valueOf(0), BigInteger.valueOf(0), BigInteger.valueOf(1), BigInteger.valueOf(3), BigInteger.valueOf(3)).send(); // Pay as you go service
             //regC.addPolicyInService(BigInteger.valueOf(1), BigInteger.valueOf(2), address.get(i)).send();
             regC.addPolicyInService(BigInteger.valueOf(1), BigInteger.valueOf(3), address.get(i)).send();
             regC.addPolicyInService(BigInteger.valueOf(1), BigInteger.valueOf(4), address.get(i)).send();
-
+            endTime = System.currentTimeMillis();
             System.out.println("New service is added to SP: " + credentials.get(i).getAddress());
         }
-
+        return (endTime-beginTime);
     }
 
     public static void systemSetup(Web3j web3, Credentials adminCredential) throws Exception {
@@ -710,3 +740,4 @@ public class MyController {
     }
 
 }
+
