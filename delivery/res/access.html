@@ -1,0 +1,48 @@
+<html>
+<head>
+    <title>Access Control</title>
+    <meta charset="utf-8">
+    <link rel="icon" href="favicon.svg"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- UIkit CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.6.18/dist/css/uikit.min.css" />
+
+    <!-- UIkit JS -->
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.6.18/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.6.18/dist/js/uikit-icons.min.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="HeaderHeight HeaderBackground" style="width: 100%; position: fixed;top: 0px;z-index: 1;">
+    <div class="Centered" style="display: inline-flex; flex-direction: row-reverse;">
+        <div class="HeaderHeight uk-inline" style="text-align: center;flex: 0 0 50px;">
+            &nbsp <img id="OptionMenuImg" src="menu.svg" style="width:20px; height: 20px; display: none;" alt=""/>
+            &nbsp
+            <div id="OptionMenu" uk-dropdown="mode: click; pos: bottom-right; animation: uk-animation-slide-top-small; duration: 250" style="padding: 0">
+                <ul class="uk-nav uk-dropdown-nav">
+                </ul>
+            </div>
+        </div>
+        <div class="HeaderHeight uk-text-normal" style="text-align: center;flex: auto; color:white;">
+            <div id="PageTitle" class="HeaderTitle">Access</div>
+        </div>
+        <div class="HeaderHeight" id="Return" style="text-align: center;flex: 0 0 50px; opacity: 1;">
+            &nbsp <img src="left-arrow.svg" style="width:20px; height: 20px;" alt=""/> &nbsp
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+    $("#Return").click(function () {
+        load("/setup.html");
+    });
+
+</script>
+</body>
+</html>

@@ -176,7 +176,7 @@ public class MyController {
         List<String> address = new ArrayList<>();
         List<String> addressSP = new ArrayList<>();
         List<String> addressNP = new ArrayList<>();
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        ExecutorService executorService = Executors.newFixedThreadPool(_ueNumber);
         for (int i = 0; i < _ueNumber; i++) {
             final int index = i;
             String finalPath = path;
@@ -211,8 +211,9 @@ public class MyController {
         for (int i = 0; i < credentials.size(); i++) {
             AccessManagerContract acm = AccessManagerContract.load(_accessControlContract, web3, credentials.get(i), GAS_PRICE, GAS_LIMIT);
             beginTime = System.currentTimeMillis();
-            TransactionReceipt res = acm.terminationAndPayment(address.get(i), BigInteger.valueOf(1), BigInteger.valueOf(1), BigInteger.valueOf(2),BigInteger.valueOf(2)).send();
+            TransactionReceipt tr = acm.terminationAndPayment(address.get(i), BigInteger.valueOf(1), BigInteger.valueOf(1), BigInteger.valueOf(2),BigInteger.valueOf(2)).send();
             endTime = System.currentTimeMillis();
+            System.out.println("Payment PAYG gas usage = " + tr.getCumulativeGasUsed());
             System.out.println("user's blocked token for Prepaid service resuet in access manager is: " + acm.getUserStoredToken(address.get(i)).send());
             System.out.println("user available token after access in PAYG is: " + acm.getUserToken(address.get(i)).send());
             System.out.println("SP available token after access in PAYG is: " + acm.getSPToken(BigInteger.valueOf(1)).send());
@@ -230,7 +231,7 @@ public class MyController {
         List<String> address = new ArrayList<>();
         List<String> addressSP = new ArrayList<>();
         List<String> addressNP = new ArrayList<>();
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        ExecutorService executorService = Executors.newFixedThreadPool(_ueNumber);
         for (int i = 0; i < _ueNumber; i++) {
             final int index = i;
             String finalPath = path;
@@ -265,7 +266,8 @@ public class MyController {
         for (int i = 0; i < credentials.size(); i++) {
             AccessManagerContract acm = AccessManagerContract.load(_accessControlContract, web3, credentials.get(i), GAS_PRICE, GAS_LIMIT);
             beginTime = System.currentTimeMillis();
-            TransactionReceipt res = acm.terminationAndPayment(address.get(i), BigInteger.valueOf(1), BigInteger.valueOf(1), BigInteger.valueOf(1),BigInteger.valueOf(2)).send();
+            TransactionReceipt tr = acm.terminationAndPayment(address.get(i), BigInteger.valueOf(1), BigInteger.valueOf(1), BigInteger.valueOf(1),BigInteger.valueOf(2)).send();
+            System.out.println("Payment prepaid gas usage = " + tr.getCumulativeGasUsed());
             endTime = System.currentTimeMillis();
             System.out.println("user's blocked token for Prepaid service resuet in access manager is: " + acm.getUserStoredToken(address.get(i)).send());
             System.out.println("user available token after access in Prepaid is: " + acm.getUserToken(address.get(i)).send());
@@ -284,7 +286,7 @@ public class MyController {
         List<String> address = new ArrayList<>();
         List<String> addressSP = new ArrayList<>();
         List<String> addressNP = new ArrayList<>();
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        ExecutorService executorService = Executors.newFixedThreadPool(_ueNumber);
         for (int i = 0; i < _ueNumber; i++) {
             final int index = i;
             String finalPath = path;
@@ -319,9 +321,10 @@ public class MyController {
         for (int i = 0; i < credentials.size(); i++) {
             AccessManagerContract acm = AccessManagerContract.load(_accessControlContract, web3, credentials.get(i), GAS_PRICE, GAS_LIMIT);
             beginTime = System.currentTimeMillis();
-            TransactionReceipt res = acm.userValidation(address.get(i), BigInteger.valueOf(1), BigInteger.valueOf(1), BigInteger.valueOf(2)).send();
+            TransactionReceipt tr = acm.userValidation(address.get(i), BigInteger.valueOf(1), BigInteger.valueOf(1), BigInteger.valueOf(2)).send();
             endTime = System.currentTimeMillis();
-            System.out.println("user access request is: " + res.isStatusOK());
+            System.out.println("UE access to SP PAYG gas usage = " + tr.getCumulativeGasUsed());
+            System.out.println("user access request is: " + tr.isStatusOK());
             System.out.println("user's blocked token for PAYG service resuet in access manager is: " + acm.getUserStoredToken(address.get(i)).send());
             System.out.println("user available token after registration in PAYG is: " + acm.getUserToken(address.get(i)).send());
             System.out.println("SP available token after registration in PAYG is: " + acm.getSPToken(BigInteger.valueOf(1)).send());
@@ -339,7 +342,7 @@ public class MyController {
         List<String> address = new ArrayList<>();
         List<String> addressSP = new ArrayList<>();
         List<String> addressNP = new ArrayList<>();
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        ExecutorService executorService = Executors.newFixedThreadPool(_ueNumber);
         for (int i = 0; i < _ueNumber; i++) {
             final int index = i;
             String finalPath = path;
@@ -375,9 +378,10 @@ public class MyController {
         for (int i = 0; i < credentials.size(); i++) {
             AccessManagerContract acm = AccessManagerContract.load(_accessControlContract, web3, credentials.get(i), GAS_PRICE, GAS_LIMIT);
             beginTime = System.currentTimeMillis();
-            TransactionReceipt res = acm.userValidation(address.get(i), BigInteger.valueOf(1), BigInteger.valueOf(1), BigInteger.valueOf(1)).send();
+            TransactionReceipt tr = acm.userValidation(address.get(i), BigInteger.valueOf(1), BigInteger.valueOf(1), BigInteger.valueOf(1)).send();
             endTime = System.currentTimeMillis();
-            System.out.println("user access request is: " + res.isStatusOK());
+            System.out.println("UE access to SP prepaid gas usage = " + tr.getCumulativeGasUsed());
+            System.out.println("user access request is: " + tr.isStatusOK());
             System.out.println("user's blocked token in access manager is: " + acm.getUserStoredToken(address.get(i)).send());
             System.out.println("user available token after registration in PAYG is: " + acm.getUserToken(address.get(i)).send());
             System.out.println("SP available token after registration in PAYG is: " + acm.getSPToken(BigInteger.valueOf(1)).send());
@@ -394,7 +398,7 @@ public class MyController {
         List<Credentials> credentials = new ArrayList<>();
         List<String> address = new ArrayList<>();
         List<String> addressSP = new ArrayList<>();
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        ExecutorService executorService = Executors.newFixedThreadPool(_ueNumber);
         for (int i = 0; i < _ueNumber; i++) {
             final int index = i;
             String finalPath = path;
@@ -430,8 +434,9 @@ public class MyController {
             System.out.println("SP available token before registration in PAYG is: " + regC.getSPToken(BigInteger.valueOf(1)).send());
             System.out.println("NP available token before registration in PAYG is: " + regC.getNPToken(BigInteger.valueOf(1)).send());
             beginTime = System.currentTimeMillis();
-            regC.registerToServicePayAsYouGo(address.get(i), BigInteger.valueOf(1), BigInteger.valueOf(1), BigInteger.valueOf(70)).send();
+            TransactionReceipt tr = regC.registerToServicePayAsYouGo(address.get(i), BigInteger.valueOf(1), BigInteger.valueOf(1), BigInteger.valueOf(70)).send();
             endTime = System.currentTimeMillis();
+            System.out.println("UE registration in SP PAYG gas usage = " + tr.getCumulativeGasUsed());
             System.out.println("user available token after registration in PAYG is: " + regC.getUserToken(address.get(i)).send());
             System.out.println("SP available token after registration in PAYG is: " + regC.getSPToken(BigInteger.valueOf(1)).send());
             System.out.println("NP available token after registration in PAYG is: " + regC.getNPToken(BigInteger.valueOf(1)).send());
@@ -483,8 +488,9 @@ public class MyController {
             System.out.println("SP available token before registration is: " + regC.getSPToken(BigInteger.valueOf(1)).send());
             System.out.println("NP available token before registration is: " + regC.getNPToken(BigInteger.valueOf(1)).send());
             beginTime = System.currentTimeMillis();
-            regC.registerToServicePrePaid(address.get(i), addressSP.get(i), BigInteger.valueOf(1), BigInteger.valueOf(1), BigInteger.valueOf(70)).send();
+            TransactionReceipt tr = regC.registerToServicePrePaid(address.get(i), addressSP.get(i), BigInteger.valueOf(1), BigInteger.valueOf(1), BigInteger.valueOf(70)).send();
             endTime = System.currentTimeMillis();
+            System.out.println("UE registration in SP prepaid gas usage = " + tr.getCumulativeGasUsed());
             System.out.println("user available token is: " + regC.getUserToken(address.get(i)).send());
             System.out.println("SP available token is: " + regC.getSPToken(BigInteger.valueOf(1)).send());
             System.out.println("NP available token after registration is: " + regC.getNPToken(BigInteger.valueOf(1)).send());
@@ -505,7 +511,7 @@ public class MyController {
         }
         List<Credentials> credentials = new ArrayList<>();
         List<String> address = new ArrayList<>();
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        ExecutorService executorService = Executors.newFixedThreadPool(_spNumber);
         for (int i = 0; i < _spNumber; i++) {
             final int index = i;
             String finalPath = path;
@@ -538,10 +544,13 @@ public class MyController {
             beginTime = System.currentTimeMillis();
             if(entity.equals("SP")) {
                 TransactionReceipt tr = regC.registerServiceProvider(credentials.get(i).getAddress()).send();
+                System.out.println("SP registration gas usage = " + tr.getCumulativeGasUsed());
             } else if (entity.equals("NP")){
                 TransactionReceipt tr = regC.registerNewNP(credentials.get(i).getAddress()).send();
+                System.out.println("MNO registration gas usage = " + tr.getCumulativeGasUsed());
             } else{
                 TransactionReceipt tr = regC.registerNewUser(credentials.get(i).getAddress()).send();
+                System.out.println("UE registration gas usage = " + tr.getCumulativeGasUsed());
             }
             endTime = System.currentTimeMillis();
             System.out.println("New " + entity + "'s address is: " + credentials.get(i).getAddress());
@@ -555,7 +564,7 @@ public class MyController {
         String path = "./SPs/sp";
         List<Credentials> credentials = new ArrayList<>();
         List<String> address = new ArrayList<>();
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        ExecutorService executorService = Executors.newFixedThreadPool(_spNumber);
         for (int i = 0; i < _spNumber; i++) {
             final int index = i;
             String finalPath = path;
@@ -585,8 +594,10 @@ public class MyController {
         for (int i = 0; i < credentials.size(); i++) {
             RegistrationContract regC = RegistrationContract.load(_regidtrationContract, web3, credentials.get(i), GAS_PRICE, GAS_LIMIT);
             beginTime = System.currentTimeMillis();
-            regC.addNewServiceInSP(address.get(i),BigInteger.valueOf(1), BigInteger.valueOf(5), BigInteger.valueOf(1), BigInteger.valueOf(0), BigInteger.valueOf(0), BigInteger.valueOf(0)).send(); // prepaid service
-            regC.addPolicyInService(BigInteger.valueOf(1), BigInteger.valueOf(1), address.get(i)).send();
+            TransactionReceipt tr = regC.addNewServiceInSP(address.get(i),BigInteger.valueOf(1), BigInteger.valueOf(5), BigInteger.valueOf(1), BigInteger.valueOf(0), BigInteger.valueOf(0), BigInteger.valueOf(0)).send(); // prepaid service
+            System.out.println("Add new service in SP gas usage = " + tr.getCumulativeGasUsed());
+            tr = regC.addPolicyInService(BigInteger.valueOf(1), BigInteger.valueOf(1), address.get(i)).send();
+            System.out.println("Add new policy in SP gas usage = " + tr.getCumulativeGasUsed());
             regC.addPolicyInService(BigInteger.valueOf(1), BigInteger.valueOf(5), address.get(i)).send();
             regC.addNewServiceInSP(address.get(i), BigInteger.valueOf(2), BigInteger.valueOf(0), BigInteger.valueOf(0), BigInteger.valueOf(1), BigInteger.valueOf(3), BigInteger.valueOf(3)).send(); // Pay as you go service
             //regC.addPolicyInService(BigInteger.valueOf(1), BigInteger.valueOf(2), address.get(i)).send();
@@ -681,7 +692,7 @@ public class MyController {
             for (int i = 0; i < number; i++) {
                 String fileName = WalletUtils.generateNewWalletFile(password,new File(_path)); //e.g., _path = "./src/test/ServiceProviders/"
                 new File(_path +fileName).renameTo(new File(_path + _prefix +(i+1)));
-                System.out.println("Generated i = " + i+1);
+                System.out.println("Generated i = " + (i+1));
             }
         } catch(Exception e) {
             System.err.println("Error: " + e.getMessage());
